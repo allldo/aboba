@@ -32,7 +32,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/mango?sslmode=disable
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=mango
+      - DB_SSLMODE=disable
     networks:
       - mango_network
     restart: unless-stopped
