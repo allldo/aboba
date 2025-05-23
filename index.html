@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangaShop - Интернет-магазин манги</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4757, #ff3838);
+            color: white;
+        }
+
+        .page {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(10px);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .manga-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .manga-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .manga-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .manga-cover {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .manga-info {
+            padding: 20px;
+        }
+
+        .manga-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .manga-author {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .manga-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+
+        .manga-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .genre-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .admin-controls {
+            display: none;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        .admin-controls.show {
+            display: flex;
+        }
+
+        .user-info {
+            display: none;
+            color: white;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info.show {
+            display: flex;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .genres-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            padding: 10px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            min-height: 50px;
+        }
+
+        .genre-item {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .remove-genre {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            margin-left: 20px;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .auth-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .manga-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center;">
+                <div class="logo">MangaShop</div>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item active" onclick="showPage('catalog')">Каталог</a>
+                    <a href="#" class="nav-item" id="adminNavItem" onclick="showPage('admin')" style="display: none;">Админ-панель</a>
+                </nav>
+            </div>
+            
+            <div class="user-info" id="userInfo">
+                <span id="username"></span>
+                <button class="btn btn-secondary" onclick="showPage('profile')">Профиль</button>
+                <button class="btn btn-danger" onclick="logout()">Выход</button>
+            </div>
+            
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-primary" onclick="showPage('login')">Вход</button>
+                <button class="btn btn-secondary" onclick="showPage('register')">Регистрация</button>
+            </div>
+        </header>
+
+        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert"></div>
+
+        <!-- Страница каталога -->
+        <div class="page active" id="catalog">
+            <h2>Каталог манги</h2>
+            <div class="admin-controls" id="adminControls">
+                <button class="btn btn-primary" onclick="showModal('addManga')">Добавить мангу</button>
+            </div>
+            <div class="manga-grid" id="mangaGrid"></div>
+        </div>
+
+        <!-- Страница входа -->
+        <div class="page" id="login">
+            <h2>Вход в систему</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Имя пользователя:</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+
+        <!-- Страница регистрации -->
+        <div class="page" id="register">
+            <h2>Регистрация</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Имя пользователя:</label>
+                    <input type="text" name="username" required minlength="3" maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль:</label>
+                    <input type="password" name="password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+        </div>
+
+        <!-- Страница профиля -->
+        <div class="page" id="profile">
+            <h2>Профиль пользователя</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3>Изменить профиль</h3>
+                    <form onsubmit="handleChangeProfile(event)">
+                        <div class="form-group">
+                            <label>Имя пользователя:</label>
+                            <input type="text" name="username" id="profileUsername" required minlength="3" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" name="email" id="profileEmail" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </div>
+                <div>
+                    <h3>Изменить пароль</h3>
+                    <form onsubmit="handleChangePassword(event)">
+                        <div class="form-group">
+                            <label>Старый пароль:</label>
+                            <input type="password" name="old_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Новый пароль:</label>
+                            <input type="password" name="new_password" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Админ-панель -->
+        <div class="page" id="admin">
+            <h2>Админ-панель</h2>
+            
+            <div style="margin-bottom: 30px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="showAdminSection('manga')">Управление мангой</button>
+                    <button class="btn btn-secondary" onclick="showAdminSection('users')">Управление пользователями</button>
+                </div>
+            </div>
+
+            <!-- Управление мангой -->
+            <div id="adminMangaSection">
+                <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 20px;">
+                    <h3>Управление мангой</h3>
+                    <button class="btn btn-primary" onclick="showModal('addManga')">Добавить мангу</button>
+                </div>
+                
+                <div style="background: white; border-radius: 10px; padding: 20px; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">ID</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Название</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Автор</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Цена</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Статус</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Активна</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mangaTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Управление пользователями -->
+            <div id="adminUsersSection" style="display: none;">
+                <h3>Управление пользователями</h3>
+                <div style="background: white; border-radius: 10px; padding: 20px; overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f8f9fa;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">ID</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Имя пользователя</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Email</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Роль</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Статус</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="addMangaModal">
+        <div class="modal-content">
+            <h3>Добавить мангу</h3>
+            <form onsubmit="handleAddManga(event)">
+                <div class="form-group">
+                    <label>Название:</label>
+                    <input type="text" name="title" required maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Описание:</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Автор:</label>
+                    <input type="text" name="author" required maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Художник:</label>
+                    <input type="text" name="artist" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Жанры:</label>
+                    <div class="genres-input" id="genresInput" onclick="focusGenreInput()">
+                        <input type="text" id="genreInputField" placeholder="Введите жанр и нажмите Enter" style="border: none; outline: none; flex: 1; background: transparent;" onkeydown="handleGenreInput(event)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Статус:</label>
+                    <select name="status" required>
+                        <option value="ongoing">Выходит</option>
+                        <option value="completed">Завершена</option>
+                        <option value="hiatus">Приостановлена</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Год:</label>
+                    <input type="number" name="year" min="1900" max="2030">
+                </div>
+                <div class="form-group">
+                    <label>Количество глав:</label>
+                    <input type="number" name="chapters" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Цена:</label>
+                    <input type="number" name="price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Обложка (URL):</label>
+                    <input type="url" name="cover_image">
+                </div>
+                <div class="form-group">
+                    <label>Количество в наличии:</label>
+                    <input type="number" name="stock" min="0" required>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('addManga')">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="editMangaModal">
+        <div class="modal-content">
+            <h3>Редактировать мангу</h3>
+            <form onsubmit="handleEditManga(event)">
+                <input type="hidden" name="manga_id">
+                <div class="form-group">
+                    <label>Название:</label>
+                    <input type="text" name="title" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Описание:</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Автор:</label>
+                    <input type="text" name="author" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Художник:</label>
+                    <input type="text" name="artist" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label>Жанры:</label>
+                    <div class="genres-input" id="editGenresInput" onclick="focusEditGenreInput()">
+                        <input type="text" id="editGenreInputField" placeholder="Введите жанр и нажмите Enter" style="border: none; outline: none; flex: 1; background: transparent;" onkeydown="handleEditGenreInput(event)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Статус:</label>
+                    <select name="status">
+                        <option value="ongoing">Выходит</option>
+                        <option value="completed">Завершена</option>
+                        <option value="hiatus">Приостановлена</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Год:</label>
+                    <input type="number" name="year" min="1900" max="2030">
+                </div>
+                <div class="form-group">
+                    <label>Количество глав:</label>
+                    <input type="number" name="chapters" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Цена:</label>
+                    <input type="number" name="price" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Обложка (URL):</label>
+                    <input type="url" name="cover_image">
+                </div>
+                <div class="form-group">
+                    <label>Количество в наличии:</label>
+                    <input type="number" name="stock" min="0">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="is_active"> Активна
+                    </label>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('editManga')">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let isAdmin = true;
+        let currentGenres = [];
+        let editGenres = [];
+
+        // API Configuration
+        const API_BASE = 'http://127.0.0.1:8080/api';
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadManga();
+            loadUsers();
+            checkAuth();
+            showAdminSection('manga');
+            
+            showAdminSection('users');
+        });
+
+        // Управление страницами
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[onclick="showPage('${pageId}')"]`)?.classList.add('active');
+        }
+
+        // Управление модальными окнами
+        function showModal(modalId) {
+            document.getElementById(modalId + 'Modal').classList.add('show');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId + 'Modal').classList.remove('show');
+            if (modalId === 'addManga') {
+                currentGenres = [];
+                updateGenresDisplay();
+            } else if (modalId === 'editManga') {
+                editGenres = [];
+                updateEditGenresDisplay();
+            }
+        }
+
+        // Управление жанрами для добавления манги
+        function focusGenreInput() {
+            document.getElementById('genreInputField').focus();
+        }
+
+        function handleGenreInput(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = event.target;
+                const genre = input.value.trim();
+                if (genre && !currentGenres.includes(genre)) {
+                    currentGenres.push(genre);
+                    input.value = '';
+                    updateGenresDisplay();
+                }
+            }
+        }
+
+        function updateGenresDisplay() {
+            const container = document.getElementById('genresInput');
+            const input = document.getElementById('genreInputField');
+            
+            container.querySelectorAll('.genre-item').forEach(item => item.remove());
+            
+            currentGenres.forEach(genre => {
+                const genreElement = document.createElement('div');
+                genreElement.className = 'genre-item';
+                genreElement.innerHTML = `
+                    ${genre}
+                    <button type="button" class="remove-genre" onclick="removeGenre('${genre}')">×</button>
+                `;
+                container.insertBefore(genreElement, input);
+            });
+        }
+
+        function removeGenre(genre) {
+            currentGenres = currentGenres.filter(g => g !== genre);
+            updateGenresDisplay();
+        }
+
+        // Управление жанрами для редактирования манги
+        function focusEditGenreInput() {
+            document.getElementById('editGenreInputField').focus();
+        }
+
+        function handleEditGenreInput(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = event.target;
+                const genre = input.value.trim();
+                if (genre && !editGenres.includes(genre)) {
+                    editGenres.push(genre);
+                    input.value = '';
+                    updateEditGenresDisplay();
+                }
+            }
+        }
+
+        function updateEditGenresDisplay() {
+            const container = document.getElementById('editGenresInput');
+            const input = document.getElementById('editGenreInputField');
+            
+            container.querySelectorAll('.genre-item').forEach(item => item.remove());
+            
+            editGenres.forEach(genre => {
+                const genreElement = document.createElement('div');
+                genreElement.className = 'genre-item';
+                genreElement.innerHTML = `
+                    ${genre}
+                    <button type="button" class="remove-genre" onclick="removeEditGenre('${genre}')">×</button>
+                `;
+                container.insertBefore(genreElement, input);
+            });
+        }
+
+        function removeEditGenre(genre) {
+            editGenres = editGenres.filter(g => g !== genre);
+            updateEditGenresDisplay();
+        }
+
+        // Уведомления
+        function showAlert(message, type) {
+            const alertId = type === 'success' ? 'successAlert' : 'errorAlert';
+            const alert = document.getElementById(alertId);
+            alert.textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+
+        // API запросы
+        async function apiRequest(url, options = {}) {
+            try {
+                const response = await fetch(API_BASE + url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Ошибка сервера');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Аутентификация
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userData = localStorage.getItem('user');
+            
+            if (token && userData) {
+                currentUser = JSON.parse(userData);
+                isAdmin = currentUser.role === 'super_admin';
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const authButtons = document.getElementById('authButtons');
+            const userInfo = document.getElementById('userInfo');
+            const adminControls = document.getElementById('adminControls');
+            const adminNavItem = document.getElementById('adminNavItem');
+            
+            if (currentUser) {
+                authButtons.style.display = 'none';
+                userInfo.classList.add('show');
+                document.getElementById('username').textContent = currentUser.username;
+                
+                if (isAdmin) {
+                    adminControls.classList.add('show');
+                    adminNavItem.style.display = 'block';
+                    document.querySelectorAll('.admin-controls').forEach(el => el.classList.add('show'));
+                }
+                
+                // Заполнение формы профиля
+                document.getElementById('profileUsername').value = currentUser.username;
+                document.getElementById('profileEmail').value = currentUser.email;
+            } else {
+                authButtons.style.display = 'flex';
+                userInfo.classList.remove('show');
+                adminControls.classList.remove('show');
+                adminNavItem.style.display = 'none';
+                document.querySelectorAll('.admin-controls').forEach(el => el.classList.remove('show'));
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            try {
+                await apiRequest('/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        email: formData.get('email'),
+                        password: formData.get('password')
+                    })
+                });
+                
+                showAlert('Регистрация успешна! Войдите в систему.', 'success');
+                showPage('login');
+                event.target.reset();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            try {
+                const response = await apiRequest('/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        password: formData.get('password')
+                    })
+                });
+                
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.user));
+                currentUser = response.user;
+                isAdmin = response.user.role === 'super_admin';
+                
+                showAlert('Вход выполнен успешно!', 'success');
+                showPage('catalog');
+                event.target.reset();
+                updateUI();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentUser = null;
+            isAdmin = false;
+            updateUI();
+            showPage('catalog');
+            showAlert('Вы вышли из системы', 'success');
+        }
+
+        async function handleChangeProfile(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            try {
+                await apiRequest('/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({
+                        username: formData.get('username'),
+                        email: formData.get('email')
+                    })
+                });
+                
+                currentUser.username = formData.get('username');
+                currentUser.email = formData.get('email');
+                localStorage.setItem('user', JSON.stringify(currentUser));
+                updateUI();
+                showAlert('Профиль обновлен!', 'success');
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function handleChangePassword(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            try {
+                await apiRequest('/user/password', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({
+                        old_password: formData.get('old_password'),
+                        new_password: formData.get('new_password')
+                    })
+                });
+                
+                showAlert('Пароль изменен!', 'success');
+                event.target.reset();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // Управление мангой
+        async function loadManga() {
+            try {
+                let manga = await apiRequest('/manga');
+                if (manga.manga == null){
+                    manga.manga = []
+                }
+                console.log(manga.manga)
+                displayManga(manga.manga);
+            } catch (error) {
+                showAlert('Ошибка загрузки манги: ' + error.message, 'error');
+            }
+        }
+
+        function displayManga(mangaList) {
+            const grid = document.getElementById('mangaGrid');
+            grid.innerHTML = '';
+            
+            mangaList.forEach(manga => {
+                const card = document.createElement('div');
+                card.className = 'manga-card';
+                
+                const genreTags = manga.genres ? manga.genres.map(genre => 
+                    `<span class="genre-tag">${genre}</span>`
+                ).join('') : '';
+                
+                card.innerHTML = `
+                    <div class="manga-cover">
+                        ${manga.cover_image ? `<img src="${manga.cover_image}" alt="${manga.title}" style="width: 100%; height: 100%; object-fit: cover;">` : manga.title}
+                    </div>
+                    <div class="manga-info">
+                        <div class="manga-title">${manga.title}</div>
+                        <div class="manga-author">Автор: ${manga.author}</div>
+                        ${manga.artist ? `<div class="manga-author">Художник: ${manga.artist}</div>` : ''}
+                        <div class="manga-price">${manga.price}₸</div>
+                        <div class="manga-genres">${genreTags}</div>
+                        <div style="color: #666; font-size: 14px;">
+                            <div>Статус: ${getStatusText(manga.status)}</div>
+                            ${manga.year ? `<div>Год: ${manga.year}</div>` : ''}
+                            ${manga.chapters ? `<div>Глав: ${manga.chapters}</div>` : ''}
+                            <div>В наличии: ${manga.stock}</div>
+                        </div>
+                        <div class="admin-controls ${isAdmin ? 'show' : ''}">
+                            <button class="btn btn-secondary" onclick="editManga(${manga.id})">Редактировать</button>
+                            <button class="btn btn-danger" onclick="deleteManga(${manga.id})">Удалить</button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'ongoing': 'Выходит',
+                'completed': 'Завершена',
+                'hiatus': 'Приостановлена'
+            };
+            return statusMap[status] || status;
+        }
+
+        async function handleAddManga(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            try {
+                const mangaData = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    author: formData.get('author'),
+                    artist: formData.get('artist'),
+                    genres: currentGenres,
+                    status: formData.get('status'),
+                    year: parseInt(formData.get('year')) || 0,
+                    chapters: parseInt(formData.get('chapters')) || 0,
+                    price: parseFloat(formData.get('price')),
+                    cover_image: formData.get('cover_image'),
+                    stock: parseInt(formData.get('stock'))
+                };
+                
+                await apiRequest('/admin/manga', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(mangaData)
+                });
+                
+                showAlert('Манга добавлена!', 'success');
+                hideModal('addManga');
+                event.target.reset();
+                currentGenres = [];
+                loadManga();
+                if (document.getElementById('admin').classList.contains('active')) {
+                    loadMangaAdmin();
+                }
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function editManga(mangaId) {
+            try {
+                const manga = await apiRequest(`/manga/${mangaId}`);
+                
+                const form = document.querySelector('#editMangaModal form');
+                form.manga_id.value = mangaId;
+                form.title.value = manga.title || '';
+                form.description.value = manga.description || '';
+                form.author.value = manga.author || '';
+                form.artist.value = manga.artist || '';
+                form.status.value = manga.status || '';
+                form.year.value = manga.year || '';
+                form.chapters.value = manga.chapters || '';
+                form.price.value = manga.price || '';
+                form.cover_image.value = manga.cover_image || '';
+                form.stock.value = manga.stock || '';
+                form.is_active.checked = manga.is_active;
+                
+                editGenres = manga.genres || [];
+                updateEditGenresDisplay();
+                
+                showModal('editManga');
+            } catch (error) {
+                showAlert('Ошибка загрузки данных манги: ' + error.message, 'error');
+            }
+        }
+
+        async function handleEditManga(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const mangaId = formData.get('manga_id');
+            
+            try {
+                const mangaData = {
+                    title: formData.get('title'),
+                    description: formData.get('description'),
+                    author: formData.get('author'),
+                    artist: formData.get('artist'),
+                    genres: editGenres,
+                    status: formData.get('status'),
+                    year: parseInt(formData.get('year')) || 0,
+                    chapters: parseInt(formData.get('chapters')) || 0,
+                    price: parseFloat(formData.get('price')),
+                    cover_image: formData.get('cover_image'),
+                    stock: parseInt(formData.get('stock')),
+                    is_active: formData.get('is_active') === 'on'
+                };
+                
+                await apiRequest(`/admin/manga/${mangaId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify(mangaData)
+                });
+                
+                showAlert('Манга обновлена!', 'success');
+                hideModal('editManga');
+                loadManga();
+                if (document.getElementById('admin').classList.contains('active')) {
+                    loadMangaAdmin();
+                }
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function deleteManga(mangaId) {
+            if (!confirm('Вы уверены, что хотите удалить эту мангу?')) {
+                return;
+            }
+            
+            try {
+                await apiRequest(`/admin/manga/${mangaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                
+                showAlert('Манга удалена!', 'success');
+                loadManga();
+                if (document.getElementById('admin').classList.contains('active')) {
+                    loadMangaAdmin();
+                }
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // Управление пользователями (для админа)
+        function showAdminSection(section) {
+            document.getElementById('adminMangaSection').style.display = section === 'manga' ? 'block' : 'none';
+            document.getElementById('adminUsersSection').style.display = section === 'users' ? 'block' : 'none';
+            
+            if (section === 'manga') {
+                loadMangaAdmin();
+            } else if (section === 'users') {
+                loadUsers();
+            }
+        }
+
+        async function loadMangaAdmin() {
+            try {
+                const manga = await apiRequest('/manga');
+                if (manga.manga == null){
+                    manga.manga = []
+                }
+                displayMangaAdmin(manga.manga);
+            } catch (error) {
+                showAlert('Ошибка загрузки манги: ' + error.message, 'error');
+            }
+        }
+
+        function displayMangaAdmin(mangaList) {
+            const tbody = document.getElementById('mangaTableBody');
+            tbody.innerHTML = '';
+            
+            mangaList.forEach(manga => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #dee2e6';
+                
+                row.innerHTML = `
+                    <td style="padding: 12px;">${manga.id}</td>
+                    <td style="padding: 12px;">${manga.title}</td>
+                    <td style="padding: 12px;">${manga.author}</td>
+                    <td style="padding: 12px;">${manga.price}₸</td>
+                    <td style="padding: 12px;">${getStatusText(manga.status)}</td>
+                    <td style="padding: 12px;">
+                        <span style="color: ${manga.is_active ? 'green' : 'red'};">
+                            ${manga.is_active ? 'Да' : 'Нет'}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        <button class="btn btn-secondary" style="padding: 6px 12px; margin-right: 5px;" onclick="editManga(${manga.id})">Редактировать</button>
+                        <button class="btn btn-danger" style="padding: 6px 12px;" onclick="deleteManga(${manga.id})">Удалить</button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        async function loadUsers() {
+            if (!isAdmin) return;
+            
+            try {
+                const users = await apiRequest('/admin/users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                displayUsers(users.users);
+            } catch (error) {
+                showAlert('Ошибка загрузки пользователей: ' + error.message, 'error');
+            }
+        }
+
+        function displayUsers(usersList) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            
+            usersList.forEach(user => {
+                const row = document.createElement('tr');
+                row.style.borderBottom = '1px solid #dee2e6';
+                
+                row.innerHTML = `
+                    <td style="padding: 12px;">${user.id}</td>
+                    <td style="padding: 12px;">${user.username}</td>
+                    <td style="padding: 12px;">${user.email}</td>
+                    <td style="padding: 12px;">${user.role}</td>
+                    <td style="padding: 12px;">
+                        <span style="color: ${user.is_blocked ? 'red' : 'green'};">
+                            ${user.is_blocked ? 'Заблокирован' : 'Активен'}
+                        </span>
+                    </td>
+                    <td style="padding: 12px;">
+                        ${user.id !== currentUser.id ? `
+                            <button class="btn ${user.is_blocked ? 'btn-secondary' : 'btn-danger'}" 
+                                    style="padding: 6px 12px; margin-right: 5px;" 
+                                    onclick="${user.is_blocked ? 'unblockUser' : 'blockUser'}(${user.id})">
+                                ${user.is_blocked ? 'Разблокировать' : 'Заблокировать'}
+                            </button>
+                            <button class="btn btn-danger" 
+                                    style="padding: 6px 12px;" 
+                                    onclick="deleteUser(${user.id})">
+                                Удалить
+                            </button>
+                        ` : '<span style="color: #666;">Это вы</span>'}
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        async function blockUser(userId) {
+            if (!confirm('Заблокировать пользователя?')) return;
+            
+            try {
+                await apiRequest(`/admin/users/${userId}/block`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                
+                showAlert('Пользователь заблокирован!', 'success');
+                loadUsers();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function unblockUser(userId) {
+            if (!confirm('Разблокировать пользователя?')) return;
+            
+            try {
+                await apiRequest(`/admin/users/${userId}/unblock`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                
+                showAlert('Пользователь разблокирован!', 'success');
+                loadUsers();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Вы уверены, что хотите удалить этого пользователя? Это действие необратимо!')) return;
+            
+            try {
+                await apiRequest(`/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+                
+                showAlert('Пользователь удален!', 'success');
+                loadUsers();
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        // Закрытие модальных окон при клике вне их
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        });
+
+        // Предотвращение закрытия при клике внутри модального окна
+        document.querySelectorAll('.modal-content').forEach(content => {
+            content.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>
